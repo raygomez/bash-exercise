@@ -17,14 +17,10 @@ then
 elif [ "$arg1" == 'desc' ]
 then 
   mode='-r'
-
 else
   echo "Usage:./sort.sh [asc|desc] numbers..."
   exit -1
 fi
 
+echo ${@:2} | tr ' ' '\n' | sort ${mode}
 
-shift
-nums=$@
-
-echo $@ | tr ' ' '\n' | sort ${mode}
