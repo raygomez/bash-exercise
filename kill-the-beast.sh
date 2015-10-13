@@ -5,7 +5,11 @@ declare -a deck=($(for i in {1..13}; do echo C${i}; done)
                  $(for i in {1..13}; do echo D${i}; done)
                  $(for i in {1..13}; do echo H${i}; done))
 
+declare -a beast_hand
+declare player
+
 mode=-1
+
 get_input(){
     valid=0
 
@@ -21,10 +25,6 @@ get_input(){
         esac
     done
 }
-get_input
-#for i in {1..10}; do
-#    get_input
-#done
 
 print_card() {
     card=""
@@ -49,10 +49,39 @@ print_card() {
     echo -e "You get $card."
 }
 
+initialize_beast_hand(){
+    for i in {1..10}
+    do
+        index=$(($RANDOM % ${#deck[@]}))
+        beast_hand[$index]=${deck[$index]}
+        unset deck[$index]
+    done
+}
+
+initialize_player_hand(){
+        index=$(($RANDOM % ${#deck[@]}))
+        player=${deck[$index]}
+        unset deck[$index]
+}
+
+echo ${deck[@]}
+initialize_beast_hand
+echo ${deck[@]}
+initialize_player_hand
+echo ${deck[@]}
+
+#while player not dead or not yet done
+#
+#    if input is quit
+#        quit
+#
+#    if traverse
+#        compare player
+#        if win next round
+#        else dies
+#    else if dodge
+#        compare player
+#        if win next round
+#        else change cards
 
 
-#print_card 10S
-#print_card 1S
-#print_card 11H
-#print_card 12D
-#print_card 13C
