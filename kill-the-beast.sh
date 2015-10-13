@@ -13,18 +13,18 @@ get_input(){
     do
         echo 'Enter input:'
         read input
-        case "${input}" in
-            [Tt][Rr][Aa][Vv][Ee][Rr][Ss][Ee]) echo "Traverse";valid=1;;
-            [Dd][Oo][Dd][Gg][Ee]) echo "Dodge";valid=1;;
-            [Qq][Uu][Ii][Tt]) echo "Quit";valid=1;;
+        case "${input,,}" in
+            traverse) echo "Traverse";valid=1;;
+            dodge) echo "Dodge";valid=1;;
+            quit) echo "Quit";valid=1;;
         *) echo "Not valid"
         esac
     done
 }
-
-for i in {1..10}; do
-    get_input
-done
+get_input
+#for i in {1..10}; do
+#    get_input
+#done
 
 print_card() {
     card=""
