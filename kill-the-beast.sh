@@ -52,20 +52,22 @@ print_card() {
 }
 
 initialize_beast_hand(){
-    for i in {1..10}
+    for i in {0..9}
     do
         index=$(($RANDOM % ${#deck[@]}))
         beast_hand[${i}]=${deck[${index}]}
         unset deck[${index}]
+        deck=(${deck[@]})
     done
-
-
 }
 
 initialize_player_hand(){
-        index=$(($RANDOM % ${#deck[@]}))
+
+        size=${#deck[@]}
+        index=$(($RANDOM % ${size}))
         player=${deck[$index]}
         unset deck[${index}]
+        deck=(${deck[@]})
 }
 
 round=1
@@ -73,19 +75,18 @@ dead=0
 
 traverse(){
 
-    round_card="${beast_hand[${round}]}"
-    echo "round" ${round}
-    echo "card" "${beast_hand[${round}]}"
+    (( index = round - 1 ))
+    round_card="${beast_hand[${index}]}"
 
     echo ${round_card}
     echo "Player ${player} vs Beast ${round_card}"
     echo "Player ${player//[^0-9]} vs Beast ${round_card//[^0-9]}"
 
-#    if (( ${player} < "${beast_hand[$round-1]}" ))
-#    then
-#        echo 'you die'
-#    fi
-    round+=1
+    if (( "${player//[^0-9]}" < "${beast_hand[round_card]//[^0-9]}" ))
+    then
+        echo 'you die'
+    fi
+    (( round+=1 ))
 
     echo 'traverse'
 }
@@ -93,6 +94,7 @@ traverse(){
 initialize_beast_hand
 initialize_player_hand
 traverse
+
 #
 #dead=0
 #
