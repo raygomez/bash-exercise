@@ -1,13 +1,17 @@
 #!/bin/bash
-
 declare -a deck=($(for i in {1..13}; do echo C${i}; done)
                  $(for i in {1..13}; do echo S${i}; done)
                  $(for i in {1..13}; do echo D${i}; done)
                  $(for i in {1..13}; do echo H${i}; done))
 
+declare -a gamedeck=(${deck[*]})
+
 declare -a beast_hand
 declare player
 
+TRAVERSE=0
+DODGE=1
+QUIT=2
 mode=-1
 
 get_input(){
@@ -18,9 +22,9 @@ get_input(){
         echo 'Enter input:'
         read input
         case "${input,,}" in
-            traverse) echo "Traverse";valid=1;;
-            dodge) echo "Dodge";valid=1;;
-            quit) echo "Quit";valid=1;;
+            traverse) mode=TRAVERSE; valid=1;;
+            dodge) mode=DODGE; valid=1;;
+            quit) mode=QUIT; valid=1;;
         *) echo "Not valid"
         esac
     done
@@ -61,14 +65,41 @@ initialize_beast_hand(){
 initialize_player_hand(){
         index=$(($RANDOM % ${#deck[@]}))
         player=${deck[$index]}
-        unset deck[$index]
+        unset deck[${index}]
 }
 
-echo ${deck[@]}
+round=1
+dead=0
+
+traverse(){
+    echo ${player}
+    if (( ${player} < ${beast_hand[$round-1]} ))
+    then
+        echo 'you die'
+    fi
+    round+=1
+
+    echo 'traverse'
+}
+
 initialize_beast_hand
-echo ${deck[@]}
 initialize_player_hand
-echo ${deck[@]}
+
+dead=0
+
+while (( ${dead} == 0 ));
+do
+    get_input
+    if (( ${mode} == ${TRAVERSE} ))
+    then
+        traverse
+    elif (( ${mode} == ${DODGE} ))
+    then
+        echo "dodge"
+    else
+        exit 1
+    fi
+done
 
 #while player not dead or not yet done
 #
