@@ -72,21 +72,15 @@ initialize_player_hand(){
 
 round=1
 dead=0
+fail=0
 
-traverse(){
-    set -xv
+compare(){
 
-    echo 'Round' $round
-    echo "${beast_hand[@]}"
-    (( index = round - 1 ))
-    round_card="${beast_hand[${index}]}"
-
-    echo "Player ${player} vs Beast ${round_card}"
-
-    pdigit="${player//[^0-9]}"
-    bdigit="${round_card//[^0-9]}"
-    psuit="${player//[0-9]}"
-    bsuit="${round_card//[0-9]}"
+    fail=0
+    pdigit="${1//[^0-9]}"
+    bdigit="${2//[^0-9]}"
+    psuit="${1//[0-9]}"
+    bsuit="${2//[0-9]}"
 
     if [ "${pdigit}" -lt "${bdigit}" ]
     then
@@ -100,7 +94,7 @@ traverse(){
         then
             if [ "${bsuit}" == 'H' ]
             then
-                dead=1
+                fail=1
             else
                 echo 'next round'
             fi
@@ -110,13 +104,29 @@ traverse(){
             then
                 echo 'next round'
             else
-                dead=1
+                fail=1
             fi
         else
-            dead=1
+            fail=1
         fi
     else
         echo 'next round'
+    fi
+
+
+}
+traverse(){
+    set -xv
+
+    echo 'Round' $round
+    (( index = round - 1 ))
+    round_card="${beast_hand[${index}]}"
+
+    echo "Player ${player} vs Beast ${round_card}"
+    compare ${player} ${round_card}
+
+    if [ ${fail} -ne 0 ]; then
+        dead=1
     fi
     (( round++ ))
 
