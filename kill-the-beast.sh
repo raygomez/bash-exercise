@@ -71,7 +71,6 @@ initialize_player_hand(){
         deck=(${deck[@]})
 }
 
-round=1
 dead=0
 fail=0
 
@@ -114,13 +113,14 @@ compare(){
         echo 'next round'
     fi
 
-
 }
+
+round=0
+
 traverse(){
-    echo -e'\nRound' $round
     echo 'Traversing:'
 
-    (( index = round - 1 ))
+    (( index = round ))
     round_card="${beast_hand[${index}]}"
 
     echo "Player ${player} vs Beast ${round_card}"
@@ -137,8 +137,7 @@ traverse(){
 
 dodge(){
 
-    echo -e '\nRound' $round
-    (( index = round - 1 ))
+    (( index = round ))
     round_card="${beast_hand[${index}]}"
     echo 'Dodging:'
     echo "Player ${player} vs Beast ${round_card}"
@@ -150,7 +149,7 @@ dodge(){
         initialize_player_hand
 
         i=$(($RANDOM % ${#deck[@]}))
-        (( index = round - 1 ))
+        (( index = round ))
         beast_hand[$index]=${deck[${i}]}
         deck=(${deck[@]})
     else
@@ -164,9 +163,12 @@ dodge(){
 initialize_beast_hand
 initialize_player_hand
 discard=()
-while (( ${dead} == 0 ));
+while (( ${dead} == 0 )) && (( round < 10 ));
 do
+    echo -e '\nRound' $(( round + 1 ))
+
     get_input
+
     if (( ${mode} == ${TRAVERSE} ))
     then
         traverse
