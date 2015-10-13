@@ -24,7 +24,7 @@ get_input(){
             traverse) mode=TRAVERSE; valid=1;;
             dodge) mode=DODGE; valid=1;;
             quit) mode=QUIT; valid=1;;
-        *) echo "Not valid"
+            *) echo "Not valid"
         esac
     done
 }
@@ -64,11 +64,11 @@ initialize_beast_hand(){
 
 initialize_player_hand(){
 
-        size=${#deck[@]}
-        index=$(($RANDOM % ${size}))
-        player=${deck[$index]}
-        unset deck[${index}]
-        deck=(${deck[@]})
+    size=${#deck[@]}
+    index=$(($RANDOM % ${size}))
+    player=${deck[$index]}
+    unset deck[${index}]
+    deck=(${deck[@]})
 }
 
 dead=0
@@ -83,34 +83,24 @@ compare(){
     bsuit="${2//[0-9]}"
 
     if [ "${pdigit}" -lt "${bdigit}" ]
-    then
-        fail=1
+    then fail=1
     elif [ "${pdigit}" == "${bdigit}" ]
     then
-        if [ "${psuit}" == 'H' ]
-        then
-            echo 'next round'
+        if [ "${psuit}" == 'H' ]; then echo 'next round'
         elif [ "${psuit}" == 'D' ]
         then
-            if [ "${bsuit}" == 'H' ]
-            then
-                fail=1
-            else
-                echo 'next round'
+            if [ "${bsuit}" == 'H' ]; then fail=1
+            else echo 'next round'
             fi
         elif [ "${psuit}" == 'S' ]
         then
             if [ "${bsuit}" == 'C' ]
-            then
-                echo 'next round'
-            else
-                fail=1
+            then echo 'next round'
+            else fail=1
             fi
-        else
-            fail=1
+        else fail=1
         fi
-    else
-        echo 'next round'
+    else echo 'next round'
     fi
 
 }
@@ -126,8 +116,7 @@ traverse(){
     echo "Player ${player} vs Beast ${round_card}"
     compare ${player} ${round_card}
 
-    if [ ${fail} -ne 0 ]; then
-        dead=1
+    if [ ${fail} -ne 0 ]; then dead=1
     else
         echo 'Dodging successful.'
         (( round++ ))
@@ -170,13 +159,10 @@ do
     get_input
 
     if (( ${mode} == ${TRAVERSE} ))
-    then
-        traverse
+    then traverse
     elif (( ${mode} == ${DODGE} ))
-    then
-        dodge
-    else
-        exit 1
+    then dodge
+    else exit 1
     fi
 done
 
