@@ -74,97 +74,69 @@ round=1
 dead=0
 
 traverse(){
+    set -xv
 
+    echo 'Round' $round
+    echo "${beast_hand[@]}"
     (( index = round - 1 ))
     round_card="${beast_hand[${index}]}"
 
-    echo ${round_card}
     echo "Player ${player} vs Beast ${round_card}"
-    echo "Player ${player//[^0-9]} vs Beast ${round_card//[^0-9]}"
 
     pdigit="${player//[^0-9]}"
-    bdigit="${beast_hand[round_card]//[^0-9]}"
+    bdigit="${round_card//[^0-9]}"
     psuit="${player//[0-9]}"
-    bsuit="${beast_hand[round_card]//[0-9]}"
-
-    echo value "${pdigit} ${bdigit}"
+    bsuit="${round_card//[0-9]}"
 
     if [ "${pdigit}" -lt "${bdigit}" ]
     then
-        echo 'you die'
-    elif [ "${pdigit}" -eq "${bdigit}" ]
+        dead=1
+    elif [ "${pdigit}" == "${bdigit}" ]
     then
-        if [ "${psuit}" -eq 'H' ]
+        if [ "${psuit}" == 'H' ]
         then
             echo 'next round'
-        elif [ "${psuit}" -eq 'D' ]
+        elif [ "${psuit}" == 'D' ]
         then
-            if [ "${bsuit}" -eq 'H' ]
+            if [ "${bsuit}" == 'H' ]
             then
-                echo 'you die'
+                dead=1
             else
                 echo 'next round'
             fi
-        elif [ "${psuit}" -eq 'S' ]
+        elif [ "${psuit}" == 'S' ]
         then
-            if [ "${bsuit}" -eq 'C' ]
+            if [ "${bsuit}" == 'C' ]
             then
                 echo 'next round'
             else
-                echp 'you die'
+                dead=1
             fi
         else
-            echo 'you die'
+            dead=1
         fi
     else
         echo 'next round'
     fi
-    (( round+=1 ))
+    (( round++ ))
 
     echo 'traverse'
 }
 
 initialize_beast_hand
 initialize_player_hand
-traverse
-#traverse
-#traverse
-#traverse
-#traverse
-#traverse
-#traverse
-#traverse
-#traverse
 
-#
-#dead=0
-#
-#while (( ${dead} == 0 ));
-#do
-#    get_input
-#    if (( ${mode} == ${TRAVERSE} ))
-#    then
-#        traverse
-#    elif (( ${mode} == ${DODGE} ))
-#    then
-#        echo "dodge"
-#    else
-#        exit 1
-#    fi
-#done
-
-#while player not dead or not yet done
-#
-#    if input is quit
-#        quit
-#
-#    if traverse
-#        compare player
-#        if win next round
-#        else dies
-#    else if dodge
-#        compare player
-#        if win next round
-#        else change cards
-
+while (( ${dead} == 0 ));
+do
+    get_input
+    if (( ${mode} == ${TRAVERSE} ))
+    then
+        traverse
+    elif (( ${mode} == ${DODGE} ))
+    then
+        echo "dodge"
+    else
+        exit 1
+    fi
+done
 
