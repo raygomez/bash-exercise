@@ -1,4 +1,5 @@
 #!/bin/bash
+LC_ALL=C
 
 echo 'Enter password:'
 read password
