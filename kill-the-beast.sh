@@ -4,8 +4,6 @@ declare -a deck=($(for i in {1..13}; do echo C${i}; done)
                  $(for i in {1..13}; do echo D${i}; done)
                  $(for i in {1..13}; do echo H${i}; done))
 
-declare -a gamedeck=(${deck[*]})
-
 declare -a beast_hand
 declare player
 
@@ -57,9 +55,11 @@ initialize_beast_hand(){
     for i in {1..10}
     do
         index=$(($RANDOM % ${#deck[@]}))
-        beast_hand[$index]=${deck[$index]}
-        unset deck[$index]
+        beast_hand[${i}]=${deck[${index}]}
+        unset deck[${index}]
     done
+
+
 }
 
 initialize_player_hand(){
@@ -72,11 +72,19 @@ round=1
 dead=0
 
 traverse(){
-    echo ${player}
-    if (( ${player} < ${beast_hand[$round-1]} ))
-    then
-        echo 'you die'
-    fi
+
+    round_card="${beast_hand[${round}]}"
+    echo "round" ${round}
+    echo "card" "${beast_hand[${round}]}"
+
+    echo ${round_card}
+    echo "Player ${player} vs Beast ${round_card}"
+    echo "Player ${player//[^0-9]} vs Beast ${round_card//[^0-9]}"
+
+#    if (( ${player} < "${beast_hand[$round-1]}" ))
+#    then
+#        echo 'you die'
+#    fi
     round+=1
 
     echo 'traverse'
@@ -84,22 +92,23 @@ traverse(){
 
 initialize_beast_hand
 initialize_player_hand
-
-dead=0
-
-while (( ${dead} == 0 ));
-do
-    get_input
-    if (( ${mode} == ${TRAVERSE} ))
-    then
-        traverse
-    elif (( ${mode} == ${DODGE} ))
-    then
-        echo "dodge"
-    else
-        exit 1
-    fi
-done
+traverse
+#
+#dead=0
+#
+#while (( ${dead} == 0 ));
+#do
+#    get_input
+#    if (( ${mode} == ${TRAVERSE} ))
+#    then
+#        traverse
+#    elif (( ${mode} == ${DODGE} ))
+#    then
+#        echo "dodge"
+#    else
+#        exit 1
+#    fi
+#done
 
 #while player not dead or not yet done
 #
