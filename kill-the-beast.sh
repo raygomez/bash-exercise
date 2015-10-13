@@ -149,9 +149,11 @@ dodge(){
     if [ ${fail} -eq 0 ]; then
         discard=( ${discard[@]} ${player} ${round_card} )
         initialize_player_hand
+        set -xv
         i=$(($RANDOM % ${#deck[@]}))
-        beast_hand[${index}]=${deck[${i}]}
-        unset deck[${i}]
+        (( index = round - 1 ))
+        echo ${index}
+        beast_hand[$index]=${deck[${i}]}
         deck=(${deck[@]})
     else
         (( round++ ))
