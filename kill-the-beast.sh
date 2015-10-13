@@ -5,6 +5,7 @@ declare -a deck=($(for i in {1..13}; do echo C${i}; done)
                  $(for i in {1..13}; do echo H${i}; done))
 
 declare -a beast_hand
+declare -a discard
 declare player
 
 TRAVERSE=0
@@ -84,7 +85,7 @@ compare(){
 
     if [ "${pdigit}" -lt "${bdigit}" ]
     then
-        dead=1
+        fail=1
     elif [ "${pdigit}" == "${bdigit}" ]
     then
         if [ "${psuit}" == 'H' ]
@@ -116,8 +117,7 @@ compare(){
 
 }
 traverse(){
-    set -xv
-
+    echo 'traverse'
     echo 'Round' $round
     (( index = round - 1 ))
     round_card="${beast_hand[${index}]}"
@@ -130,12 +130,40 @@ traverse(){
     fi
     (( round++ ))
 
-    echo 'traverse'
+}
+
+dodge(){
+
+    echo 'dodge'
+    echo 'Round' $round
+    (( index = round - 1 ))
+    round_card="${beast_hand[${index}]}"
+
+    echo "Player ${player} vs Beast ${round_card}"
+    compare ${player} ${round_card}
+
+    echo "player ${player}"
+    echo "beast ${beast_hand[@]}"
+
+    echo "discard ${discard[@]}"
+    if [ ${fail} -eq 0 ]; then
+        discard=( ${discard[@]} ${player} ${round_card} )
+        initialize_player_hand
+        i=$(($RANDOM % ${#deck[@]}))
+        beast_hand[${index}]=${deck[${i}]}
+        unset deck[${i}]
+        deck=(${deck[@]})
+    else
+        (( round++ ))
+    fi
+    echo "discard ${discard[@]}"
+
+
 }
 
 initialize_beast_hand
 initialize_player_hand
-
+discard=()
 while (( ${dead} == 0 ));
 do
     get_input
@@ -144,7 +172,7 @@ do
         traverse
     elif (( ${mode} == ${DODGE} ))
     then
-        echo "dodge"
+        dodge
     else
         exit 1
     fi
