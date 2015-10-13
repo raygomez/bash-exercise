@@ -20,7 +20,10 @@ get_input(){
     do
         echo 'Enter input:'
         read input
-        case "${input,,}" in
+        #bash4
+        #input="${input,,}"
+        input=`echo $input | tr '[:upper:]' '[:lower:]'`
+        case "${input}" in
             traverse) mode=TRAVERSE; valid=1;;
             dodge) mode=DODGE; valid=1;;
             quit) mode=QUIT; valid=1;;
@@ -69,6 +72,7 @@ initialize_player_hand(){
     player=${deck[$index]}
     unset deck[${index}]
     deck=(${deck[@]})
+    echo "Player card is ${player}."
 }
 
 dead=0
@@ -106,7 +110,6 @@ compare(){
 }
 
 round=0
-
 traverse(){
     echo 'Traversing:'
 
@@ -118,10 +121,9 @@ traverse(){
 
     if [ ${fail} -ne 0 ]; then dead=1
     else
-        echo 'Dodging successful.'
+        echo 'Traversing successful.'
         (( round++ ))
     fi
-
 }
 
 dodge(){
@@ -134,19 +136,19 @@ dodge(){
 
     if [ ${fail} -eq 0 ]; then
         discard=( ${discard[@]} ${player} ${round_card} )
-        echo "Discarding P ${player} and B ${round_card}"
+        echo "Discarding ${player} and ${round_card}"
         initialize_player_hand
 
         i=$(($RANDOM % ${#deck[@]}))
         (( index = round ))
         beast_hand[$index]=${deck[${i}]}
         deck=(${deck[@]})
+        echo 'Dodging unsuccessful.'
     else
         echo 'Dodging successful.'
         (( round++ ))
     fi
     echo
-
 }
 
 initialize_beast_hand
@@ -162,7 +164,20 @@ do
     then traverse
     elif (( ${mode} == ${DODGE} ))
     then dodge
-    else exit 1
+    else
+        echo 'Quitting so early.'
+        exit 1
     fi
 done
 
+if (( ${dead} == 0))
+then echo 'You successfully killed the monster.'
+else echo 'You died.'
+fi
+
+echo "Remaining cards:"
+echo "${deck[@]}"
+echo "Encounter cards:"
+echo "${beast_hand[@]}"
+echo "Discard pile:"
+echo "${discard[@]}"
