@@ -117,8 +117,9 @@ compare(){
 
 }
 traverse(){
-    echo 'traverse'
-    echo 'Round' $round
+    echo -e'\nRound' $round
+    echo 'Traversing:'
+
     (( index = round - 1 ))
     round_card="${beast_hand[${index}]}"
 
@@ -127,39 +128,36 @@ traverse(){
 
     if [ ${fail} -ne 0 ]; then
         dead=1
+    else
+        echo 'Dodging successful.'
+        (( round++ ))
     fi
-    (( round++ ))
 
 }
 
 dodge(){
 
-    echo 'dodge'
-    echo 'Round' $round
+    echo -e '\nRound' $round
     (( index = round - 1 ))
     round_card="${beast_hand[${index}]}"
-
+    echo 'Dodging:'
     echo "Player ${player} vs Beast ${round_card}"
     compare ${player} ${round_card}
 
-    echo "player ${player}"
-    echo "beast ${beast_hand[@]}"
-
-    echo "discard ${discard[@]}"
     if [ ${fail} -eq 0 ]; then
         discard=( ${discard[@]} ${player} ${round_card} )
+        echo "Discarding P ${player} and B ${round_card}"
         initialize_player_hand
-        set -xv
+
         i=$(($RANDOM % ${#deck[@]}))
         (( index = round - 1 ))
-        echo ${index}
         beast_hand[$index]=${deck[${i}]}
         deck=(${deck[@]})
     else
+        echo 'Dodging successful.'
         (( round++ ))
     fi
-    echo "discard ${discard[@]}"
-
+    echo
 
 }
 
