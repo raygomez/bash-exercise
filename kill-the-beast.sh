@@ -90,21 +90,20 @@ compare(){
     then fail=1
     elif [ "${pdigit}" == "${bdigit}" ]
     then
-        if [ "${psuit}" == 'H' ]; then echo 'next round'
+        if [ "${psuit}" == 'H' ]; then echo ''
         elif [ "${psuit}" == 'D' ]
         then
             if [ "${bsuit}" == 'H' ]; then fail=1
-            else echo 'next round'
             fi
         elif [ "${psuit}" == 'S' ]
         then
             if [ "${bsuit}" == 'C' ]
-            then echo 'next round'
+            then echo ''
             else fail=1
             fi
         else fail=1
         fi
-    else echo 'next round'
+    else echo ''
     fi
 
 }
@@ -154,7 +153,7 @@ dodge(){
 initialize_beast_hand
 initialize_player_hand
 discard=()
-while (( ${dead} == 0 )) && (( round < 10 ));
+while (( ${dead} == 0 )) && (( round < 3 ));
 do
     echo -e '\nRound' $(( round + 1 ))
 
