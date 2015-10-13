@@ -82,9 +82,42 @@ traverse(){
     echo "Player ${player} vs Beast ${round_card}"
     echo "Player ${player//[^0-9]} vs Beast ${round_card//[^0-9]}"
 
-    if (( "${player//[^0-9]}" < "${beast_hand[round_card]//[^0-9]}" ))
+    pdigit="${player//[^0-9]}"
+    bdigit="${beast_hand[round_card]//[^0-9]}"
+    psuit="${player//[0-9]}"
+    bsuit="${beast_hand[round_card]//[0-9]}"
+
+    echo value "${pdigit} ${bdigit}"
+
+    if [ "${pdigit}" -lt "${bdigit}" ]
     then
         echo 'you die'
+    elif [ "${pdigit}" -eq "${bdigit}" ]
+    then
+        if [ "${psuit}" -eq 'H' ]
+        then
+            echo 'next round'
+        elif [ "${psuit}" -eq 'D' ]
+        then
+            if [ "${bsuit}" -eq 'H' ]
+            then
+                echo 'you die'
+            else
+                echo 'next round'
+            fi
+        elif [ "${psuit}" -eq 'S' ]
+        then
+            if [ "${bsuit}" -eq 'C' ]
+            then
+                echo 'next round'
+            else
+                echp 'you die'
+            fi
+        else
+            echo 'you die'
+        fi
+    else
+        echo 'next round'
     fi
     (( round+=1 ))
 
@@ -94,6 +127,14 @@ traverse(){
 initialize_beast_hand
 initialize_player_hand
 traverse
+#traverse
+#traverse
+#traverse
+#traverse
+#traverse
+#traverse
+#traverse
+#traverse
 
 #
 #dead=0
