@@ -33,6 +33,7 @@ get_input(){
 }
 
 print_card() {
+
     card=""
     num="${1//[^0-9]}"
     case ${num} in
@@ -41,18 +42,18 @@ print_card() {
         11) card='Jack';;
         12) card='Queen';;
         13) card='King';;
-        *)card="Invalid"
     esac
 
     card+=" of "
-    case "$1" in
-        *C)card+='Club';;
-        *S)card+="Spades";;
-        *D)card+="Diamond";;
-        *H)card+="Heart";;
+    case "${1}" in
+        C*)card+='Club';;
+        S*)card+="Spades";;
+        D*)card+="Diamond";;
+        H*)card+="Heart";;
+        *) echo ${1}
     esac
 
-    echo -e "You get $card."
+    echo -e "$card."
 }
 
 initialize_beast_hand(){
@@ -150,10 +151,15 @@ dodge(){
     echo
 }
 
+display(){ while read data; do print_card ${data[@]}
+    done
+}
+
+
 initialize_beast_hand
 initialize_player_hand
 discard=()
-while (( ${dead} == 0 )) && (( round < 3 ));
+while (( ${dead} == 0 )) && (( round < 1 ));
 do
     echo -e '\nRound' $(( round + 1 ))
 
@@ -174,8 +180,10 @@ then echo 'You successfully killed the monster.'
 else echo 'You died.'
 fi
 
+
 echo "Remaining cards:"
 echo "${deck[@]}"
+#echo "${deck[@]:1:2}" | tr ' ' '\n' | display
 echo "Encounter cards:"
 echo "${beast_hand[@]}"
 echo "Discard pile:"
