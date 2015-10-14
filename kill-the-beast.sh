@@ -13,13 +13,18 @@ DODGE=1
 QUIT=2
 mode=-1
 
+logs=""
+
 get_input(){
     valid=0
 
     while [ "${valid}" -eq 0 ]
     do
         echo 'Enter input:'
+        logs+='Enter input:\n'
         read input
+        logs+="${input}\n"
+
         #bash4
         #input="${input,,}"
         input=`echo $input | tr '[:upper:]' '[:lower:]'`
@@ -74,6 +79,7 @@ initialize_player_hand(){
     unset deck[${index}]
     deck=(${deck[@]})
     echo "Player card is ${player}."
+    logs+="Player card is ${player}\n"
 }
 
 dead=0
@@ -112,16 +118,19 @@ compare(){
 round=0
 traverse(){
     echo 'Traversing:'
+    logs+='Traversing:\n'
 
     (( index = round ))
     round_card="${beast_hand[${index}]}"
 
     echo "Player ${player} vs Beast ${round_card}"
+    logs+="Player ${player} vs Beast ${round_card}\n"
     compare ${player} ${round_card}
 
     if [ ${fail} -ne 0 ]; then dead=1
     else
         echo 'Traversing successful.'
+        logs+='Traversing successful.\n'
         (( round++ ))
     fi
 }
@@ -131,12 +140,15 @@ dodge(){
     (( index = round ))
     round_card="${beast_hand[${index}]}"
     echo 'Dodging:'
+    logs+='Dodging:\n'
     echo "Player ${player} vs Beast ${round_card}"
+    logs+="Player ${player} vs Beast ${round_card}\n"
     compare ${player} ${round_card}
 
     if [ ${fail} -eq 0 ]; then
         discard=( ${discard[@]} ${player} ${round_card} )
         echo "Discarding ${player} and ${round_card}"
+        logs+="Discarding ${player} and ${round_card}\n"
         initialize_player_hand
 
         i=$(($RANDOM % ${#deck[@]}))
@@ -144,8 +156,10 @@ dodge(){
         beast_hand[$index]=${deck[${i}]}
         deck=(${deck[@]})
         echo 'Dodging unsuccessful.'
+        logs+='Dodging unsuccessful.\n'
     else
         echo 'Dodging successful.'
+        logs+='Dodging successful.\n'
         (( round++ ))
     fi
     echo
@@ -159,10 +173,10 @@ display(){ while read data; do print_card ${data[@]}
 initialize_beast_hand
 initialize_player_hand
 discard=()
-while (( ${dead} == 0 )) && (( round < 1 ));
+while (( ${dead} == 0 )) && (( round < 10 ));
 do
     echo -e '\nRound' $(( round + 1 ))
-
+    logs+="\nRound $(( round + 1 ))\n"
     get_input
 
     if (( ${mode} == ${TRAVERSE} ))
@@ -171,13 +185,20 @@ do
     then dodge
     else
         echo 'Quitting so early.'
+        logs+='Quitting so early.\n'
         exit 1
     fi
 done
 
 if (( ${dead} == 0))
-then echo 'You successfully killed the monster.'
-else echo 'You died.'
+then
+    echo 'You successfully killed the monster.'
+    logs+='You successfully killed the monster.\n'
+    echo -e ${logs} > "JournalOfHeroes.txt"
+else
+    echo 'You died.'
+    logs+='You died.\n'
+    echo -e ${logs} > "Obituary.txt"
 fi
 
 
